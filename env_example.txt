@@ -1,0 +1,28 @@
+# Flask Configuration
+SECRET_KEY=your-secret-key-here-change-this-in-production
+FLASK_ENV=development
+FLASK_DEBUG=True
+
+# Google AI Configuration
+GOOGLE_API_KEY=your-google-api-key-here
+
+# Database Configuration
+DATABASE_URL=sqlite:///student_pathway.db
+
+# Application Configuration
+APP_NAME=Agentic AI Course Pathway Recommender
+APP_VERSION=2.0.0
+APP_HOST=0.0.0.0
+APP_PORT=5000
+
+# Logging Configuration
+LOG_LEVEL=INFO
+LOG_FILE=app.log
+
+# Security Configuration
+WTF_CSRF_ENABLED=True
+WTF_CSRF_TIME_LIMIT=3600
+
+# Performance Configuration
+MAX_CONTENT_LENGTH=16777216  # 16MB
+UPLOAD_FOLDER=uploads

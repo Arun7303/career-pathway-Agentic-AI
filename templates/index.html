@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-robot text-primary me-3"></i>Agentic AI Course Pathway Recommender
+                </h1>
+                <p class="lead mb-4">Experience the future of educational guidance with our advanced agentic AI system. Get personalized pathway recommendations powered by multiple specialized AI agents working together to analyze your profile and create the perfect educational roadmap.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/recommendation-form" class="btn btn-primary btn-lg">
+                        <i class="fas fa-robot me-2"></i>Get AI Recommendation
+                    </a>
+                    <a href="/pathway-insights" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-chart-bar me-2"></i>View Insights
+                    </a>
+                    <a href="/dashboard" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i>Analytics Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <div class="ai-animation">
+                    <i class="fas fa-brain text-primary display-1 mb-3"></i>
+                    <div class="ai-agents-indicator">
+                        <div class="agent-dot active" title="Data Analysis Agent"></div>
+                        <div class="agent-dot active" title="Recommendation Agent"></div>
+                        <div class="agent-dot active" title="Validation Agent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-robot text-primary display-6 mb-3"></i>
+                    <h5 class="card-title">Agentic AI System</h5>
+                    <p class="card-text">Multiple specialized AI agents work together: Data Analysis Agent, Recommendation Agent, and Validation Agent for comprehensive analysis.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-user-graduate text-success display-6 mb-3"></i>
+                    <h5 class="card-title">Deep Personalization</h5>
+                    <p class="card-text">Advanced psychological profiling and learning style analysis to create truly personalized educational pathways.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-chart-line text-warning display-6 mb-3"></i>
+                    <h5 class="card-title">Real-time Analytics</h5>
+                    <p class="card-text">Live dashboard with system health monitoring, performance metrics, and comprehensive analytics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Agents Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">Our AI Agents</h2>
+            <p class="lead text-muted">Three specialized agents working in harmony to provide the best recommendations</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Data Analysis Agent
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Academic performance analysis</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Interest categorization</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Learning style assessment</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Psychological profiling</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Constraint identification</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Recommendation Agent
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Pathway generation</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Career opportunity mapping</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Course suggestions</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Skill development plans</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Timeline creation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>Validation Agent
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success me-2"></i>Academic fit validation</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Budget feasibility check</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Interest alignment verification</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Feasibility assessment</li>
+                        <li><i class="fas fa-check text-success me-2"></i>Quality assurance</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mb-4">How Our Agentic AI Works</h2>
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="step-number">1</div>
+                        <h5>Profile Input</h5>
+                        <p>Enter your academic details, interests, and preferences</p>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="step-number">2</div>
+                        <h5>Data Analysis Agent</h5>
+                        <p>Analyzes your profile and creates psychological insights</p>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="step-number">3</div>
+                        <h5>Recommendation Agent</h5>
+                        <p>Generates personalized pathway using Google AI</p>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="step-number">4</div>
+                        <h5>Validation Agent</h5>
+                        <p>Validates and ensures quality of recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold">Advanced Features</h2>
+            <p class="lead text-muted">Cutting-edge technology for the best educational guidance</p>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <div class="feature-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-database"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>SQLite Database</h5>
+                    <p class="text-muted">Secure storage of student data with comprehensive tracking and analytics.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <div class="feature-icon bg-success text-white rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Feedback System</h5>
+                    <p class="text-muted">Rate and provide feedback on recommendations to improve the system.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <div class="feature-icon bg-warning text-white rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Real-time Analytics</h5>
+                    <p class="text-muted">Live dashboard with system health monitoring and performance metrics.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex">
+                <div class="flex-shrink-0">
+                    <div class="feature-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5>Mobile Responsive</h5>
+                    <p class="text-muted">Fully responsive design that works perfectly on all devices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0 auto 15px;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.ai-animation {
+    position: relative;
+}
+
+.ai-agents-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.agent-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    animation: pulse 2s infinite;
+}
+
+.agent-dot.active {
+    background-color: #28a745;
+}
+
+.agent-dot:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.agent-dot:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.feature-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 100px 0;
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 50px;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+</style>
+{% endblock %}

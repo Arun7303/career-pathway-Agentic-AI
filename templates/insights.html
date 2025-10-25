@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Pathway Insights</h1>
+    
+    {% if pathway_insights %}
+    <div class="row">
+        {% for label, stats in pathway_insights.items() %}
+        {% if stats %}
+        <div class="col-md-6 mb-4">
+            <div class="card pathway-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Pathway Label: {{ label }}</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">Average SSC</small>
+                            <p class="fw-bold">{{ "%.1f"|format(stats.average_ssc) }}%</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Average HSC</small>
+                            <p class="fw-bold">
+                                {% if stats.average_hsc %}{{ "%.1f"|format(stats.average_hsc) }}%{% else %}N/A{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Common Interests</small>
+                        <div>
+                            {% for interest, count in stats.common_interests.items() %}
+                            <span class="badge bg-primary me-1">{{ interest }} ({{ count }})</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">Popular Locations</small>
+                        <div>
+                            {% for location, count in stats.popular_locations.items() %}
+                            <span class="badge bg-secondary me-1">{{ location }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <small class="text-muted">Total Students: {{ stats.count }}</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <p>No pathway insights available at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

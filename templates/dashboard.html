@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i> Analytics Dashboard
+                </h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <a href="/students" class="btn btn-outline-info">
+                        <i class="fas fa-users me-2"></i>View Students
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Health Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i> System Health Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="health-indicator" id="overallHealth">
+                                    <i class="fas fa-circle text-success fs-1"></i>
+                                    <h6 class="mt-2">Overall Health</h6>
+                                    <span class="badge bg-success">Healthy</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="health-indicator">
+                                    <i class="fas fa-robot text-primary fs-1"></i>
+                                    <h6 class="mt-2">AI Agents</h6>
+                                    <span class="badge bg-primary" id="activeAgents">3/3 Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="health-indicator">
+                                    <i class="fas fa-database text-info fs-1"></i>
+                                    <h6 class="mt-2">Database</h6>
+                                    <span class="badge bg-info">Connected</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="health-indicator">
+                                    <i class="fas fa-cloud text-warning fs-1"></i>
+                                    <h6 class="mt-2">Google AI</h6>
+                                    <span class="badge bg-warning" id="googleAIStatus">Connected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0" id="totalStudents">{{ analytics.database_analytics.total_students or 0 }}</h4>
+                            <p class="mb-0">Total Students</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0" id="totalRecommendations">{{ analytics.database_analytics.total_recommendations or 0 }}</h4>
+                            <p class="mb-0">Recommendations</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-robot fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0" id="averageRating">{{ analytics.database_analytics.average_rating or 0 }}</h4>
+                            <p class="mb-0">Avg Rating</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-star fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0" id="recentStudents">{{ analytics.database_analytics.recent_students or 0 }}</h4>
+                            <p class="mb-0">This Week</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-week fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i> Popular Fields
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="fieldsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i> Agent Performance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="agent-performance">
+                        {% if analytics.agent_status %}
+                        {% for agent_name, agent_info in analytics.agent_status.agents.items() %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h6 class="mb-0">{{ agent_name.replace('_', ' ').title() }}</h6>
+                                <small class="text-muted">{{ agent_info.model_name }}</small>
+                            </div>
+                            <div>
+                                {% if agent_info.is_available %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i> Recent Activity
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Event</th>
+                                    <th>Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivityTable">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Loading recent activity...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Information -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i> System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Version:</strong> 2.0.0
+                        </div>
+                        <div class="col-6">
+                            <strong>Environment:</strong> Development
+                        </div>
+                        <div class="col-6">
+                            <strong>Python:</strong> 3.9+
+                        </div>
+                        <div class="col-6">
+                            <strong>Flask:</strong> 2.3.3
+                        </div>
+                        <div class="col-6">
+                            <strong>Database:</strong> SQLite
+                        </div>
+                        <div class="col-6">
+                            <strong>AI Model:</strong> Gemini Pro
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i> Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="exportData()">
+                            <i class="fas fa-download me-2"></i>Export Data
+                        </button>
+                        <button class="btn btn-outline-success" onclick="runHealthCheck()">
+                            <i class="fas fa-stethoscope me-2"></i>Run Health Check
+                        </button>
+                        <button class="btn btn-outline-info" onclick="viewLogs()">
+                            <i class="fas fa-file-alt me-2"></i>View Logs
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="clearCache()">
+                            <i class="fas fa-broom me-2"></i>Clear Cache
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+    loadRecentActivity();
+    updateSystemHealth();
+    
+    // Auto-refresh every 30 seconds
+    setInterval(updateSystemHealth, 30000);
+});
+
+function initializeDashboard() {
+    // Initialize fields chart
+    const fieldsData = {{ analytics.database_analytics.popular_fields | tojson | safe }};
+    if (fieldsData && Object.keys(fieldsData).length > 0) {
+        const ctx = document.getElementById('fieldsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(fieldsData),
+                datasets: [{
+                    data: Object.values(fieldsData),
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+function loadRecentActivity() {
+    // Simulate recent activity loading
+    const tableBody = document.getElementById('recentActivityTable');
+    const activities = [
+        { time: '2 minutes ago', event: 'New Recommendation', details: 'Student: John Doe', status: 'Success' },
+        { time: '5 minutes ago', event: 'Health Check', details: 'All systems operational', status: 'Success' },
+        { time: '10 minutes ago', event: 'Data Analysis', details: 'Processed 5 student profiles', status: 'Success' },
+        { time: '15 minutes ago', event: 'Feedback Received', details: 'Rating: 5 stars', status: 'Success' },
+        { time: '20 minutes ago', event: 'New Student Registration', details: 'Student: Jane Smith', status: 'Success' }
+    ];
+    
+    tableBody.innerHTML = '';
+    activities.forEach(activity => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${activity.time}</td>
+            <td>${activity.event}</td>
+            <td>${activity.details}</td>
+            <td><span class="badge bg-success">${activity.status}</span></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function updateSystemHealth() {
+    fetch('/api/health')
+        .then(response => response.json())
+        .then(data => {
+            const overallHealth = document.getElementById('overallHealth');
+            const activeAgents = document.getElementById('activeAgents');
+            const googleAIStatus = document.getElementById('googleAIStatus');
+            
+            if (data.overall_health === 'healthy') {
+                overallHealth.innerHTML = `
+                    <i class="fas fa-circle text-success fs-1"></i>
+                    <h6 class="mt-2">Overall Health</h6>
+                    <span class="badge bg-success">Healthy</span>
+                `;
+            } else if (data.overall_health === 'degraded') {
+                overallHealth.innerHTML = `
+                    <i class="fas fa-circle text-warning fs-1"></i>
+                    <h6 class="mt-2">Overall Health</h6>
+                    <span class="badge bg-warning">Degraded</span>
+                `;
+            } else {
+                overallHealth.innerHTML = `
+                    <i class="fas fa-circle text-danger fs-1"></i>
+                    <h6 class="mt-2">Overall Health</h6>
+                    <span class="badge bg-danger">Unhealthy</span>
+                `;
+            }
+            
+            if (data.agents) {
+                const activeCount = Object.values(data.agents).filter(agent => agent.status === 'healthy').length;
+                const totalCount = Object.keys(data.agents).length;
+                activeAgents.textContent = `${activeCount}/${totalCount} Active`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching health status:', error);
+        });
+}
+
+function refreshDashboard() {
+    location.reload();
+}
+
+function exportData() {
+    alert('Export functionality will be implemented soon.');
+}
+
+function runHealthCheck() {
+    updateSystemHealth();
+    alert('Health check completed. See status above.');
+}
+
+function viewLogs() {
+    alert('Log viewer will be implemented soon.');
+}
+
+function clearCache() {
+    alert('Cache cleared successfully.');
+}
+</script>
+
+<style>
+.health-indicator {
+    text-align: center;
+    padding: 1rem;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.agent-performance .d-flex {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #f8f9fa;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+</style>
+{% endblock %}

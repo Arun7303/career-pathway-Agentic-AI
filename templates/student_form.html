@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-graduate"></i> Student Profile
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/get-recommendation" id="studentForm">
+                        <!-- Personal Information Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-user"></i> Personal Information
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" name="name" 
+                                           placeholder="Enter your full name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Mobile Number *</label>
+                                    <input type="tel" class="form-control" name="mobile_number" 
+                                           placeholder="Enter your mobile number" pattern="[0-9]{10}" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" name="email" 
+                                           placeholder="Enter your email address">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Education Type *</label>
+                                    <select class="form-select" name="education_type" required>
+                                        <option value="">Select Education Type</option>
+                                        {% for edu_type in options.education_types %}
+                                        <option value="{{ edu_type }}">{{ edu_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Information Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-graduation-cap"></i> Academic Information
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">SSC Percentage *</label>
+                                    <input type="number" class="form-control" name="ssc_percent" 
+                                           min="0" max="100" step="0.1" placeholder="e.g., 85.5" required>
+                                    <div class="form-text">Enter your 10th standard percentage</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">HSC Percentage</label>
+                                    <input type="number" class="form-control" name="hsc_percent" 
+                                           min="0" max="100" step="0.1" placeholder="e.g., 78.2">
+                                    <div class="form-text">Enter your 12th standard percentage (if applicable)</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Diploma Percentage</label>
+                                    <input type="number" class="form-control" name="diploma_percent" 
+                                           min="0" max="100" step="0.1" placeholder="e.g., 82.0">
+                                    <div class="form-text">Enter your diploma percentage (if applicable)</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Subjects *</label>
+                                <select class="form-select" name="subjects" required>
+                                    <option value="">Select Your Subject Stream</option>
+                                    {% for subject in options.subjects %}
+                                    <option value="{{ subject }}">{{ subject }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">Select the subject stream you studied</div>
+                            </div>
+                        </div>
+
+                        <!-- Interests and Preferences Section -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-heart"></i> Interests & Preferences
+                            </h5>
+                            <div class="mb-3">
+                                <label class="form-label">Areas of Interest *</label>
+                                
+                                <!-- Predefined Interests -->
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Select from popular interests:</h6>
+                                    <div class="row">
+                                        {% for interest in options.interests %}
+                                        <div class="col-md-3 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input interest-checkbox" type="checkbox" 
+                                                       name="interests" value="{{ interest }}" id="int_{{ loop.index }}">
+                                                <label class="form-check-label" for="int_{{ loop.index }}">
+                                                    {{ interest }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Custom Interest Input -->
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Or add your own interests:</h6>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="customInterest" 
+                                               placeholder="Enter your interest (e.g., Artificial Intelligence, Robotics, etc.)">
+                                        <button class="btn btn-outline-primary" type="button" id="addInterest">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Type your interest and click Add to include it</div>
+                                </div>
+                                
+                                <!-- Selected Interests Display -->
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Your Selected Interests:</h6>
+                                    <div id="selectedInterests" class="selected-interests-container">
+                                        <span class="text-muted">No interests selected yet</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-text">Select or add at least 2-3 areas that interest you for better recommendations</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Preferred Field *</label>
+                                    <select class="form-select" name="preferred_field" required>
+                                        <option value="">Select Your Preferred Field</option>
+                                        {% for field in options.preferred_fields %}
+                                        <option value="{{ field }}">{{ field }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Choose the field you want to pursue</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Preferred Learning Mode *</label>
+                                    <select class="form-select" name="preferred_mode" required>
+                                        <option value="">Select Learning Mode</option>
+                                        {% for mode in options.preferred_modes %}
+                                        <option value="{{ mode }}">{{ mode }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Choose your preferred way of learning</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial and Location Preferences -->
+                        <div class="mb-4">
+                            <h5 class="text-primary border-bottom pb-2">
+                                <i class="fas fa-map-marker-alt"></i> Preferences & Constraints
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Annual Budget (in Lakhs) *</label>
+                                    <input type="number" class="form-control" name="budget" 
+                                           min="0" max="50" step="0.1" placeholder="e.g., 5.0" required>
+                                    <div class="form-text">Your annual budget for education</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Preferred Location *</label>
+                                    <select class="form-select" name="location_preference" required>
+                                        <option value="">Select Preferred Location</option>
+                                        {% for location in options.locations %}
+                                        <option value="{{ location }}">{{ location }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">Choose your preferred study location</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fas fa-robot"></i> Get AI Recommendation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Generating Your Personalized Recommendation</h5>
+                <p class="text-muted">Our AI agents are analyzing your profile and creating the perfect pathway for you...</p>
+                <div class="progress mt-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('studentForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate interests (minimum 2)
+        if (selectedInterests.size < 2) {
+            alert('Please select or add at least 2 areas of interest for better recommendations.');
+            return;
+        }
+        
+        // Validate mobile number
+        const mobileNumber = document.querySelector('input[name="mobile_number"]').value;
+        if (!/^[0-9]{10}$/.test(mobileNumber)) {
+            alert('Please enter a valid 10-digit mobile number.');
+            return;
+        }
+        
+        // Add selected interests as hidden inputs
+        const existingInterestInputs = form.querySelectorAll('input[name="interests"]');
+        existingInterestInputs.forEach(input => input.remove());
+        
+        selectedInterests.forEach(interest => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'interests';
+            hiddenInput.value = interest;
+            form.appendChild(hiddenInput);
+        });
+        
+        // Show loading modal
+        loadingModal.show();
+        
+        // Submit form after a short delay to show loading
+        setTimeout(() => {
+            form.submit();
+        }, 1000);
+    });
+    
+    // Real-time validation
+    const mobileInput = document.querySelector('input[name="mobile_number"]');
+    mobileInput.addEventListener('input', function() {
+        const value = this.value.replace(/\D/g, ''); // Remove non-digits
+        this.value = value;
+        
+        if (value.length === 10) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else if (value.length > 0) {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+    
+    // Interest management
+    let selectedInterests = new Set();
+    const selectedInterestsContainer = document.getElementById('selectedInterests');
+    const customInterestInput = document.getElementById('customInterest');
+    const addInterestBtn = document.getElementById('addInterest');
+    
+    // Update selected interests display
+    function updateSelectedInterests() {
+        if (selectedInterests.size === 0) {
+            selectedInterestsContainer.innerHTML = '<span class="text-muted">No interests selected yet</span>';
+        } else {
+            selectedInterestsContainer.innerHTML = Array.from(selectedInterests).map(interest => 
+                `<span class="badge bg-primary me-1 mb-1">${interest} <i class="fas fa-times ms-1" onclick="removeInterest('${interest}')"></i></span>`
+            ).join('');
+        }
+        
+        // Update validation
+        if (selectedInterests.size >= 2) {
+            selectedInterestsContainer.className = 'selected-interests-container text-success';
+        } else {
+            selectedInterestsContainer.className = 'selected-interests-container text-warning';
+        }
+    }
+    
+    // Add custom interest
+    addInterestBtn.addEventListener('click', function() {
+        const interest = customInterestInput.value.trim();
+        if (interest && !selectedInterests.has(interest)) {
+            selectedInterests.add(interest);
+            customInterestInput.value = '';
+            updateSelectedInterests();
+        }
+    });
+    
+    // Add interest on Enter key
+    customInterestInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addInterestBtn.click();
+        }
+    });
+    
+    // Handle predefined interest checkboxes
+    const interestCheckboxes = document.querySelectorAll('.interest-checkbox');
+    interestCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                selectedInterests.add(this.value);
+            } else {
+                selectedInterests.delete(this.value);
+            }
+            updateSelectedInterests();
+        });
+    });
+    
+    // Remove interest function (global for onclick)
+    window.removeInterest = function(interest) {
+        selectedInterests.delete(interest);
+        updateSelectedInterests();
+        
+        // Uncheck corresponding checkbox if it exists
+        const checkbox = document.querySelector(`input[value="${interest}"]`);
+        if (checkbox) {
+            checkbox.checked = false;
+        }
+    };
+    
+    // Auto-format budget input
+    const budgetInput = document.querySelector('input[name="budget"]');
+    budgetInput.addEventListener('input', function() {
+        let value = parseFloat(this.value);
+        if (value > 50) {
+            this.value = 50;
+        } else if (value < 0) {
+            this.value = 0;
+        }
+    });
+});
+</script>
+
+<style>
+.selected-interests-container {
+    min-height: 40px;
+    padding: 10px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.selected-interests-container.text-success {
+    border-color: #28a745;
+    background-color: #d4edda;
+}
+
+.selected-interests-container.text-warning {
+    border-color: #ffc107;
+    background-color: #fff3cd;
+}
+
+.interest-badge {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.interest-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.interest-badge .fa-times {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.interest-badge .fa-times:hover {
+    opacity: 1;
+    color: #dc3545;
+}
+
+.form-check-input:checked + .form-check-label {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#customInterest:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.loading-spinner {
+    display: none;
+}
+
+.loading-spinner.show {
+    display: inline-block;
+}
+</style>
+{% endblock %}

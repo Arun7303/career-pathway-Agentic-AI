@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-users me-2"></i> Students Database
+                </h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshList()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                    <a href="/dashboard" class="btn btn-outline-info">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" 
+                                       placeholder="Search by name, mobile, or field...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="fieldFilter">
+                                <option value="">All Fields</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Science">Science</option>
+                                <option value="Commerce">Commerce</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Design">Design</option>
+                                <option value="Management">Management</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="educationFilter">
+                                <option value="">All Education Types</option>
+                                <option value="HSC">HSC</option>
+                                <option value="Diploma">Diploma</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="fas fa-filter me-2"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-table me-2"></i> Students List
+                        <span class="badge bg-light text-dark ms-2" id="studentCount">{{ students|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="studentsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>Education</th>
+                                    <th>Field</th>
+                                    <th>Performance</th>
+                                    <th>Budget</th>
+                                    <th>Location</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">#{{ student.id }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                {{ student.name[0].upper() }}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ student.name }}</h6>
+                                                {% if student.email %}
+                                                <small class="text-muted">{{ student.email }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ student.mobile_number }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ student.education_type }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ student.preferred_field }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="performance-indicator">
+                                            {% set avg_score = (student.ssc_percent + (student.hsc_percent or 0) + (student.diploma_percent or 0)) / 3 %}
+                                            {% if avg_score >= 80 %}
+                                                <span class="badge bg-success">{{ "%.1f"|format(avg_score) }}%</span>
+                                            {% elif avg_score >= 60 %}
+                                                <span class="badge bg-warning">{{ "%.1f"|format(avg_score) }}%</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ "%.1f"|format(avg_score) }}%</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ student.budget }}L</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">{{ student.location_preference }}</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ student.created_at[:10] }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/student/{{ student.id }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-info" onclick="viewRecommendations({{ student.id }})">
+                                                <i class="fas fa-robot"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="editStudent({{ student.id }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Students pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page - 1 }}">Previous</a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for p in range(1, (students|length // 20) + 2) %}
+                    {% if p == page %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ p }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if students|length == 20 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page + 1 }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Student Details Modal -->
+<div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Student Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="studentModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTable();
+    setupSearch();
+});
+
+function initializeTable() {
+    // Add hover effects and animations
+    const table = document.getElementById('studentsTable');
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+            this.style.transform = 'scale(1.01)';
+            this.style.transition = 'all 0.2s ease';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = 'scale(1)';
+        });
+    });
+}
+
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const fieldFilter = document.getElementById('fieldFilter');
+    const educationFilter = document.getElementById('educationFilter');
+    
+    searchInput.addEventListener('input', debounce(applyFilters, 300));
+    fieldFilter.addEventListener('change', applyFilters);
+    educationFilter.addEventListener('change', applyFilters);
+}
+
+function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const fieldFilter = document.getElementById('fieldFilter').value;
+    const educationFilter = document.getElementById('educationFilter').value;
+    
+    const table = document.getElementById('studentsTable');
+    const rows = table.querySelectorAll('tbody tr');
+    let visibleCount = 0;
+    
+    rows.forEach(row => {
+        const name = row.cells[1].textContent.toLowerCase();
+        const mobile = row.cells[2].textContent.toLowerCase();
+        const field = row.cells[4].textContent.toLowerCase();
+        const education = row.cells[3].textContent.toLowerCase();
+        
+        const matchesSearch = !searchTerm || 
+            name.includes(searchTerm) || 
+            mobile.includes(searchTerm) || 
+            field.includes(searchTerm);
+        
+        const matchesField = !fieldFilter || field.includes(fieldFilter.toLowerCase());
+        const matchesEducation = !educationFilter || education.includes(educationFilter.toLowerCase());
+        
+        if (matchesSearch && matchesField && matchesEducation) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('studentCount').textContent = visibleCount;
+}
+
+function refreshList() {
+    location.reload();
+}
+
+function viewRecommendations(studentId) {
+    // Redirect to student detail page
+    window.location.href = `/student/${studentId}`;
+}
+
+function editStudent(studentId) {
+    alert(`Edit functionality for student ${studentId} will be implemented soon.`);
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+</script>
+
+<style>
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.performance-indicator .badge {
+    font-size: 0.75em;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.table-responsive {
+    border-radius: 0.375rem;
+}
+
+.pagination .page-link {
+    color: #007bff;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,514 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fas fa-check-circle me-3 fs-4"></i>
+                <div>
+                    <h4 class="alert-heading mb-1">Recommendation Generated Successfully!</h4>
+                    <p class="mb-0">Hello {{ student_data.name }}, your personalized educational pathway has been created by our AI agents.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Recommendation Card -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-robot me-2"></i> AI-Powered Recommendation
+                        </h3>
+                        {% if validation %}
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-light text-dark me-2">
+                                Confidence: {{ "%.1f"|format(validation.validation_score * 100) }}%
+                            </span>
+                            {% if validation.is_valid %}
+                            <span class="badge bg-success">Validated</span>
+                            {% else %}
+                            <span class="badge bg-warning">Needs Review</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if recommendation %}
+                    <!-- Recommended Pathway -->
+                    <div class="mb-4">
+                        <h4 class="text-primary border-bottom pb-2">
+                            <i class="fas fa-route me-2"></i> Recommended Pathway
+                        </h4>
+                        <div class="alert alert-light border-start border-primary border-4">
+                            <p class="fs-5 mb-0">{{ recommendation.recommended_pathway }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Reasoning -->
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-lightbulb me-2"></i> Why This Pathway?
+                        </h5>
+                        <p class="text-muted">{{ recommendation.reasoning }}</p>
+                    </div>
+
+                    <!-- Career Opportunities -->
+                    {% if recommendation.career_opportunities %}
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-briefcase me-2"></i> Career Opportunities
+                        </h5>
+                        <div class="row">
+                            {% for opportunity in recommendation.career_opportunities %}
+                            <div class="col-md-6 mb-2">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-2">
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        {% if opportunity.title %}
+                                            <strong>{{ opportunity.title }}</strong>
+                                            {% if opportunity.description %}
+                                                <br><small class="text-muted">{{ opportunity.description }}</small>
+                                            {% endif %}
+                                            {% if opportunity.growth_potential %}
+                                                <br><span class="badge bg-info">{{ opportunity.growth_potential }} Growth</span>
+                                            {% endif %}
+                                        {% else %}
+                                            {{ opportunity if opportunity is string else opportunity|string }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Skills to Develop -->
+                    {% if recommendation.skills_to_develop %}
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-tools me-2"></i> Skills to Develop
+                        </h5>
+                        <div class="row">
+                            {% for skill in recommendation.skills_to_develop %}
+                            <div class="col-md-6 mb-2">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body py-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {% if skill.skill %}
+                                            <strong>{{ skill.skill }}</strong>
+                                            {% if skill.importance %}
+                                                <span class="badge bg-primary ms-2">{{ skill.importance }}</span>
+                                            {% endif %}
+                                            {% if skill.development_method %}
+                                                <br><small class="text-muted">{{ skill.development_method }}</small>
+                                            {% endif %}
+                                        {% else %}
+                                            {{ skill }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Suggested Courses -->
+                    {% if recommendation.suggested_courses %}
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-book me-2"></i> Suggested Courses
+                        </h5>
+                        <div class="list-group">
+                            {% for course in recommendation.suggested_courses %}
+                            <div class="list-group-item border-0 bg-light mb-2">
+                                {% if course.course_name %}
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ course.course_name }}</h6>
+                                            <p class="mb-1 text-muted">{{ course.level }}</p>
+                                            {% if course.duration %}
+                                                <small class="text-muted">Duration: {{ course.duration }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% if course.cost_estimate %}
+                                            <span class="badge bg-success">{{ course.cost_estimate }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if course.institutions %}
+                                        <div class="mt-2">
+                                            <small class="text-muted">Institutions: {{ course.institutions|join(', ') }}</small>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="fas fa-graduation-cap text-primary me-2"></i>{{ course }}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Timeline Milestones -->
+                    {% if recommendation.timeline_milestones %}
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-calendar-alt me-2"></i> Timeline & Milestones
+                        </h5>
+                        <div class="timeline">
+                            {% for milestone in recommendation.timeline_milestones %}
+                            <div class="timeline-item mb-3">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="mb-1">{{ milestone.phase }}</h6>
+                                            <span class="badge bg-primary">{{ milestone.duration }}</span>
+                                        </div>
+                                        {% if milestone.goals %}
+                                            <p class="mb-1"><strong>Goals:</strong> {{ milestone.goals|join(', ') }}</p>
+                                        {% endif %}
+                                        {% if milestone.key_actions %}
+                                            <p class="mb-0"><strong>Actions:</strong> {{ milestone.key_actions|join(', ') }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Additional Recommendations -->
+                    {% if recommendation.additional_recommendations %}
+                    <div class="mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-info-circle me-2"></i> Additional Recommendations
+                        </h5>
+                        <div class="alert alert-info">
+                            <p class="mb-0">{{ recommendation.additional_recommendations }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <p class="mb-0">No AI recommendation available at the moment. Please try again later.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Analysis Summary -->
+            {% if analysis_data %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i> Analysis Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if analysis_data.academic_analysis %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Academic Performance</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Level:</span>
+                            <span class="badge bg-primary">{{ analysis_data.academic_analysis.performance_level }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Average Score:</span>
+                            <span>{{ "%.1f"|format(analysis_data.academic_analysis.average_score) }}%</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if analysis_data.interest_analysis %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Interest Category</h6>
+                        <span class="badge bg-success">{{ analysis_data.interest_analysis.primary_category }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if analysis_data.preference_analysis %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">Budget Analysis</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Category:</span>
+                            <span class="badge bg-warning">{{ analysis_data.preference_analysis.budget_analysis.category }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Similar Students -->
+            {% if similar_students %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i> Similar Successful Students
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for student in similar_students %}
+                    <div class="similar-student mb-3 p-3 border rounded bg-light">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="mb-1">{{ student.target_pathway }}</h6>
+                            <span class="badge bg-primary">{{ "%.2f"|format(student.similarity_score) }}</span>
+                        </div>
+                        <small class="text-muted">
+                            SSC {{ student.ssc_percent }}% 
+                            {% if student.hsc_percent %}, HSC {{ student.hsc_percent }}%{% endif %}
+                            {% if student.diploma_percent %}, Diploma {{ student.diploma_percent }}%{% endif %}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Student Profile Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i> Your Profile
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Name:</strong> {{ student_data.name }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Education:</strong> {{ student_data.education_type }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>SSC:</strong> {{ student_data.ssc_percent }}%
+                    </div>
+                    {% if student_data.hsc_percent %}
+                    <div class="mb-2">
+                        <strong>HSC:</strong> {{ student_data.hsc_percent }}%
+                    </div>
+                    {% endif %}
+                    {% if student_data.diploma_percent %}
+                    <div class="mb-2">
+                        <strong>Diploma:</strong> {{ student_data.diploma_percent }}%
+                    </div>
+                    {% endif %}
+                    <div class="mb-2">
+                        <strong>Interests:</strong> 
+                        <div class="mt-1">
+                            {% for interest in student_data.interests %}
+                            <span class="badge bg-light text-dark me-1">{{ interest }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Preferred Field:</strong> {{ student_data.preferred_field }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Budget:</strong> {{ student_data.budget }} Lakhs/year
+                    </div>
+                    <div class="mb-0">
+                        <strong>Location:</strong> {{ student_data.location_preference }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            {% if student_id and recommendation_id %}
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i> Rate This Recommendation
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="feedbackForm">
+                        <div class="mb-3">
+                            <label class="form-label">How helpful was this recommendation?</label>
+                            <div class="rating">
+                                <input type="radio" name="rating" value="5" id="star5">
+                                <label for="star5" class="star">★</label>
+                                <input type="radio" name="rating" value="4" id="star4">
+                                <label for="star4" class="star">★</label>
+                                <input type="radio" name="rating" value="3" id="star3">
+                                <label for="star3" class="star">★</label>
+                                <input type="radio" name="rating" value="2" id="star2">
+                                <label for="star2" class="star">★</label>
+                                <input type="radio" name="rating" value="1" id="star1">
+                                <label for="star1" class="star">★</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Additional Feedback (Optional)</label>
+                            <textarea class="form-control" name="feedback_text" rows="3" 
+                                      placeholder="Share your thoughts about this recommendation..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-4 text-center">
+        <a href="/recommendation-form" class="btn btn-primary me-2">
+            <i class="fas fa-redo me-2"></i> Get Another Recommendation
+        </a>
+        <a href="/" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-home me-2"></i> Back to Home
+        </a>
+        <a href="/pathway-insights" class="btn btn-outline-info">
+            <i class="fas fa-chart-bar me-2"></i> View Insights
+        </a>
+    </div>
+</div>
+
+<!-- Feedback Success Modal -->
+<div class="modal fade" id="feedbackSuccessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-check-circle text-success fs-1 mb-3"></i>
+                <h5>Thank You!</h5>
+                <p class="text-muted">Your feedback has been submitted successfully.</p>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 1.5rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rating label:hover,
+.rating label:hover ~ label,
+.rating input:checked ~ label {
+    color: #ffc107;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    background: #007bff;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px #007bff;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Feedback form submission
+    const feedbackForm = document.getElementById('feedbackForm');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const rating = formData.get('rating');
+            const feedbackText = formData.get('feedback_text');
+            
+            if (!rating) {
+                alert('Please select a rating before submitting.');
+                return;
+            }
+            
+            const data = {
+                student_id: {{ student_id or 'null' }},
+                recommendation_id: {{ recommendation_id or 'null' }},
+                rating: parseInt(rating),
+                feedback_text: feedbackText
+            };
+            
+            fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    const modal = new bootstrap.Modal(document.getElementById('feedbackSuccessModal'));
+                    modal.show();
+                    feedbackForm.reset();
+                } else {
+                    alert('Error submitting feedback: ' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting feedback. Please try again.');
+            });
+        });
+    }
+    
+    // Animate elements on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}
