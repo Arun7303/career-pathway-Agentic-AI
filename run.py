@@ -38,6 +38,8 @@ def main():
             port=5000,
             debug=True
         )
+        # Debug mode is controlled by the app.config['DEBUG'] setting
+        app.run(host='0.0.0.0', port=5000)
     except KeyboardInterrupt:
         print("\n👋 Shutting down gracefully...")
         sys.exit(0)
